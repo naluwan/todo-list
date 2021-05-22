@@ -35,11 +35,19 @@ app.get('/', (req, res) => {
   Todo.find()
     .lean()
     .then(todos => res.render('index', { todos }))
-    .catch(error => console.error(error))
+    .catch(error => console.log(error))
 })
 
 app.get('/todos/new', (req, res) => {
   return res.render('new')
+})
+
+app.get('/todos/:id', (req, res) => {
+  const id = req.params.id
+  return Todo.findById(id)
+    .lean()
+    .then(todo => res.render('detail', { todo }))
+    .catch(error => console.log(error))
 })
 
 app.post('/todos', (req, res) => {
