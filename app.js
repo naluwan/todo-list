@@ -2,7 +2,9 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const hbs = require('express-handlebars')
+const bodyParser = require('body-parser')
 const Todo = require('./models/todo')
+
 const app = express()
 
 const port = 3000
@@ -14,6 +16,9 @@ app.set('view engine', 'hbs')
 // setting mongodb connect
 mongoose.connect('mongodb://localhost/todo-list', { useNewUrlParser: true, useUnifiedTopology: true })
 const db = mongoose.connection
+
+// setting app.use
+app.use(bodyParser.urlencoded({ extended: true }))
 
 db.on('error', () => {
   console.log('mongodb error!')
@@ -33,6 +38,17 @@ app.get('/', (req, res) => {
     .catch(error => console.error(error))
 })
 
+app.get('/todos/new', (req, res) => {
+  return res.render('new')
+})
+
+app.post('/todos', (req, res) => {
+  const name = req.body.name
+
+  return Todo.create({ name })
+    .then(() => res.redirect('/'))
+    .catch(error => console.log(error))
+})
 
 // start Express server on localhost:3000
 app.listen(port, () => {
