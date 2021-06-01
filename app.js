@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const hbs = require('express-handlebars')
 const bodyParser = require('body-parser')
 const Todo = require('./models/todo')
+const methodOverride = require('method-override')
 
 const app = express()
 
@@ -19,6 +20,7 @@ const db = mongoose.connection
 
 // setting app.use
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(methodOverride('_method'))
 
 db.on('error', () => {
   console.log('mongodb error!')
@@ -67,7 +69,7 @@ app.post('/todos', (req, res) => {
     .catch(error => console.log(error))
 })
 
-app.post('/todos/:id/edit', (req, res) => {
+app.put('/todos/:id', (req, res) => {
   const id = req.params.id
   const { name, isDone } = req.body
   return Todo.findById(id)
@@ -86,7 +88,7 @@ app.post('/todos/:id/edit', (req, res) => {
     .catch(error => console.log(error))
 })
 
-app.post('/todos/:id/delete', (req, res) => {
+app.delete('/todos/:id', (req, res) => {
   const id = req.params.id
   return Todo.findById(id)
     .then(todo => todo.remove())
